@@ -8,7 +8,7 @@
  * Modification history:
  * 2015/7/1, v1.0 create this file.
 *******************************************************************************/
-#include "esp_common.h"
+#include "espressif/esp_common.h"
 #include "espressif/esp8266/ets_sys.h"
 #include "lwip/lwip/mem.h"
 #include "driver/gpio.h"

@@ -19,18 +19,18 @@
 #define __MQTT_CLIENT_C_
 
 #if defined(__cplusplus)
-extern "C" {
+ extern "C" {
 #endif
 
 #if defined(WIN32_DLL) || defined(WIN64_DLL)
-#define DLLImport __declspec(dllimport)
-#define DLLExport __declspec(dllexport)
+  #define DLLImport __declspec(dllimport)
+  #define DLLExport __declspec(dllexport)
 #elif defined(LINUX_SO)
-#define DLLImport extern
-#define DLLExport  __attribute__ ((visibility ("default")))
+  #define DLLImport extern
+  #define DLLExport  __attribute__ ((visibility ("default")))
 #else
-#define DLLImport
-#define DLLExport
+  #define DLLImport
+  #define DLLExport
 #endif
 
 #include "esp_common.h"
@@ -54,23 +54,19 @@ extern "C" {
 #define MAX_MESSAGE_HANDLERS 1 /* redefinable - how many subscriptions do you want? */
 #endif
 
-enum QoS {
-	QOS0, QOS1, QOS2
-};
+enum QoS { QOS0, QOS1, QOS2 };
 
 /* all failure return codes must be negative */
-enum returnCode {
-	BUFFER_OVERFLOW = -2, FAILURE = -1, SUCCESS = 0
-};
+enum returnCode { BUFFER_OVERFLOW = -2, FAILURE = -1, SUCCESS = 0 };
 
 /* The Platform specific header must define the Network and Timer structures and functions
  * which operate on them.
  *
- typedef struct Network
- {
- int (*mqttread)(Network*, unsigned char* read_buffer, int, int);
- int (*mqttwrite)(Network*, unsigned char* send_buffer, int, int);
- } Network;*/
+typedef struct Network
+{
+	int (*mqttread)(Network*, unsigned char* read_buffer, int, int);
+	int (*mqttwrite)(Network*, unsigned char* send_buffer, int, int);
+} Network;*/
 
 /* The Timer structure must be defined in the platform specific header,
  * and have the following functions to operate on it.  */
@@ -80,49 +76,55 @@ extern void TimerCountdownMS(Timer*, uint32_t);
 extern void TimerCountdown(Timer*, uint32_t);
 extern uint32_t TimerLeftMS(Timer*);
 
-typedef struct MQTTMessage {
-	enum QoS qos;
-	unsigned char retained;
-	unsigned char dup;
-	uint64_t id;
-	void *payload;
-	size_t payloadlen;
+typedef struct MQTTMessage
+{
+    enum QoS qos;
+    unsigned char retained;
+    unsigned char dup;
+    uint64_t id;
+    void *payload;
+    size_t payloadlen;
 } MQTTMessage;
 
-typedef struct MessageData {
-	MQTTMessage* message;
-	MQTTString* topicName;
+typedef struct MessageData
+{
+    MQTTMessage* message;
+    MQTTString* topicName;
 } MessageData;
 
 typedef void (*messageHandler)(MessageData*);
-typedef void (*extendedmessageHandler)(EXTED_CMD cmd, int status,
-		int ret_string_len, char *ret_string);
+typedef void (*extendedmessageHandler)(EXTED_CMD cmd, int status, int ret_string_len, char *ret_string);
 typedef void (*mqttConnectLostHandler)(char *reaseon);
 
-typedef struct MQTTClient {
-	uint64_t next_packetid, command_timeout_ms;
-	size_t buf_size, readbuf_size;
-	unsigned char *buf, *readbuf;
-	unsigned int keepAliveInterval;
-	char ping_outstanding;
-	int isconnected;
-	uint8_t fail_conn_count;
-	struct MessageHandlers {
-		const char* topicFilter;
-		void (*fp)(MessageData*);
-	} messageHandlers[MAX_MESSAGE_HANDLERS]; /* Message handlers are indexed by subscription topic */
+typedef struct MQTTClient
+{
+    uint64_t next_packetid,
+      command_timeout_ms;
+    size_t buf_size,
+      readbuf_size;
+    unsigned char *buf,
+      *readbuf;
+    unsigned int keepAliveInterval;
+    char ping_outstanding;
+    int isconnected;
+    uint8_t fail_conn_count;
+    struct MessageHandlers
+    {
+        const char* topicFilter;
+        void (*fp) (MessageData*);
+    } messageHandlers[MAX_MESSAGE_HANDLERS];      /* Message handlers are indexed by subscription topic */
 
-	struct ExtMessageHandlers {
-		EXTED_CMD cmd;
-		void (*cb)(EXTED_CMD cmd, int status, int ret_string_len,
-				char *ret_string);
-	} extmessageHandlers[MAX_MESSAGE_HANDLERS];
+    struct ExtMessageHandlers
+    {
+    	EXTED_CMD cmd;
+    	void (*cb) (EXTED_CMD cmd, int status, int ret_string_len, char *ret_string);
+    }  extmessageHandlers[MAX_MESSAGE_HANDLERS];
 
-	void (*defaultMessageHandler)(MessageData*);
-	mqttConnectLostHandler cl;
+    void (*defaultMessageHandler) (MessageData*);
+    mqttConnectLostHandler cl;
 
-	Network* ipstack;
-	Timer ping_timer;
+    Network* ipstack;
+    Timer ping_timer;
 #if defined(MQTT_TASK)
 	Mutex mutex;
 	Thread thread;
@@ -131,18 +133,18 @@ typedef struct MQTTClient {
 } MQTTClient;
 
 typedef struct {
-	/* in MQTT v3.1,If the Client ID contains more than 23 characters, the server responds to
-	 * the CONNECT message with a CONNACK return code 2: Identifier Rejected.
-	 * */
-	char *client_id;
-	/* in MQTT v3.1, it is recommended that passwords are kept to 12 characters or fewer, but
-	 * it is not required. */
-	char *username;
-	/*in MQTT v3.1, It is recommended that passwords are kept to 12 characters or fewer, but
-	 * it is not required. */
-	char *password;
-	/* user define it, and change size of device id. */
-	char *device_id;
+        /* in MQTT v3.1,If the Client ID contains more than 23 characters, the server responds to
+         * the CONNECT message with a CONNACK return code 2: Identifier Rejected.
+         * */
+        char *client_id;
+        /* in MQTT v3.1, it is recommended that passwords are kept to 12 characters or fewer, but
+         * it is not required. */
+        char *username;
+        /*in MQTT v3.1, It is recommended that passwords are kept to 12 characters or fewer, but
+         * it is not required. */
+        char *password;
+        /* user define it, and change size of device id. */
+        char *device_id;
 } REG_info;
 
 #define DefaultClient {0, 0, 0, 0, NULL, NULL, 0, 0, 0}
@@ -154,17 +156,15 @@ typedef struct {
  * @param command_timeout_ms
  * @param
  */
-DLLExport void MQTTClientInit(MQTTClient* client, Network* network,
-		unsigned int command_timeout_ms, unsigned char* sendbuf,
-		size_t sendbuf_size, unsigned char* readbuf, size_t readbuf_size);
+DLLExport void MQTTClientInit(MQTTClient* client, Network* network, unsigned int command_timeout_ms,
+		unsigned char* sendbuf, size_t sendbuf_size, unsigned char* readbuf, size_t readbuf_size);
 
 /** MQTT Connect - send an MQTT connect packet down the network and wait for a Connack
  *  The nework object must be connected to the network endpoint before calling this
  *  @param options - connect options
  *  @return success code
  */
-DLLExport int MQTTConnect(MQTTClient* client, MQTTPacket_connectData* options,
-		bool block);
+DLLExport int MQTTConnect(MQTTClient* client, MQTTPacket_connectData* options, bool block);
 
 /** MQTT Publish - send an MQTT publish packet and wait for all acks to complete for all QoSs
  *  @param client - the client object to use
@@ -180,8 +180,7 @@ DLLExport int MQTTPublish(MQTTClient* client, const char*, MQTTMessage*);
  *  @param message - the message to send
  *  @return success code
  */
-DLLExport int MQTTSubscribe(MQTTClient* client, const char* topicFilter,
-		enum QoS, messageHandler);
+DLLExport int MQTTSubscribe(MQTTClient* client, const char* topicFilter, enum QoS, messageHandler);
 
 /** MQTT Subscribe - send an MQTT unsubscribe packet and wait for unsuback before returning.
  *  @param client - the client object to use
@@ -205,35 +204,35 @@ DLLExport int MQTTYield(MQTTClient* client, int time);
 
 #if defined(MQTT_TASK)
 /** MQTT start background thread for a client.  After this, MQTTYield should not be called.
- *  @param client - the client object to use
- *  @return success code
- */
+*  @param client - the client object to use
+*  @return success code
+*/
 DLLExport int MQTTStartTask(MQTTClient* client);
 #endif
 
 DLLExport int MQTTClient_get_host_v2(char *appkey, char* url);
-DLLExport int MQTTClient_setup_with_appkey_v2(char* appkey, char *deviceid,
-		REG_info *info);
+DLLExport int MQTTClient_setup_with_appkey_v2(char* appkey, char *deviceid, REG_info *info);
 
 DLLExport int MQTTSetAlias(MQTTClient* c, const char* alias);
-DLLExport int MQTTPublishToAlias(MQTTClient* c, const char* alias,
-		void *payload, int payloadlen);
+DLLExport int MQTTPublishToAlias(MQTTClient* c, const char* alias, void *payload, int payloadlen);
 
 DLLExport int MQTTGetAlias(MQTTClient* c, const char *param);
 
-DLLExport int MQTTSetCallBack(MQTTClient *c, messageHandler cb,
-		extendedmessageHandler ext_cb, mqttConnectLostHandler cl);
+DLLExport int MQTTSetCallBack(MQTTClient *c, messageHandler cb, extendedmessageHandler ext_cb, mqttConnectLostHandler cl);
 
 DLLExport int MQTTClient_presence(MQTTClient* c, char* topic);
 
-DLLExport int MQTTPublish2(MQTTClient *c, const char* topicName, void* payload,
-		int payloadlen, cJSON *opt);
+DLLExport int MQTTPublish2(MQTTClient *c,
+		const char* topicName, void* payload, int payloadlen, cJSON *opt);
 
-DLLExport int MQTTPublish2ToAlias(MQTTClient *c, const char* alias,
-		void* payload, int payloadlen, cJSON *opt);
+DLLExport int MQTTPublish2ToAlias(MQTTClient *c,
+				const char* alias, void* payload, int payloadlen, cJSON *opt);
+
+DLLExport int MQTTGetTopiclist(MQTTClient *c, const char *alias);
+DLLExport int MQTTGetAliaslist(MQTTClient *c, const char *topic);
 
 #if defined(__cplusplus)
-}
+     }
 #endif
 
 #endif

@@ -41,13 +41,16 @@
 
 #define freertos_sockaddr sockaddr
 
+
 #define FREERTOS_SO_RCVTIMEO SO_RCVTIMEO
 
 #define FREERTOS_AF_INET AF_INET
 #define FREERTOS_SOCK_STREAM SOCK_STREAM
 #define FREERTOS_IPPROTO_TCP IPPROTO_TCP
 
-typedef struct Timer {
+
+typedef struct Timer 
+{
 //	TickType_t xTicksToWait;
 	portTickType xTicksToWait;
 //	TimeOut_t xTimeOut;
@@ -56,12 +59,13 @@ typedef struct Timer {
 
 typedef struct Network Network;
 
-struct Network {
+struct Network
+{
 //	xSocket_t my_socket;
 	int my_socket;
-	int (*mqttread)(Network*, unsigned char*, int, uint32_t);
-	int (*mqttwrite)(Network*, unsigned char*, int, uint32_t);
-	void (*disconnect)(Network*);
+	int (*mqttread) (Network*, unsigned char*, int, uint32_t);
+	int (*mqttwrite) (Network*, unsigned char*, int, uint32_t);
+	void (*disconnect) (Network*);
 };
 
 void TimerInit(Timer*);
@@ -70,7 +74,8 @@ void TimerCountdownMS(Timer*, uint32_t);
 void TimerCountdown(Timer*, uint32_t);
 uint32_t TimerLeftMS(Timer*);
 
-typedef struct Mutex {
+typedef struct Mutex
+{
 //	SemaphoreHandle_t sem;
 	xSemaphoreHandle sem;
 } Mutex;
@@ -79,7 +84,8 @@ void MutexInit(Mutex*);
 int MutexLock(Mutex*);
 int MutexUnlock(Mutex*);
 
-typedef struct Thread {
+typedef struct Thread
+{
 	xTaskHandle task;
 } Thread;
 
