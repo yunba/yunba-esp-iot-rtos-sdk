@@ -6,6 +6,10 @@
 #ifndef __UART_H__
 #define __UART_H__
 
+//#include "freertos/FreeRTOS.h"
+//#include "freertos/task.h"
+#include "freertos/queue.h"
+
 #define ETS_UART_INTR_ENABLE()  _xt_isr_unmask(1 << ETS_UART_INUM)
 #define ETS_UART_INTR_DISABLE() _xt_isr_mask(1 << ETS_UART_INUM)
 #define UART_INTR_MASK          0x1ff
@@ -84,12 +88,24 @@ typedef struct {
     uint8           UART_RxFlowThresh ;
 } UART_ConfigTypeDef;
 
+
 typedef struct {
     uint32 UART_IntrEnMask;
     uint8  UART_RX_TimeOutIntrThresh;
     uint8  UART_TX_FifoEmptyIntrThresh;
     uint8  UART_RX_FifoFullIntrThresh;
 } UART_IntrConfTypeDef;
+
+enum {
+    UART_EVENT_RX_CHAR,
+    UART_EVENT_MAX
+};
+
+typedef struct _os_event_ {
+    uint32 event;
+    uint32 param;
+} os_event_t;
+
 
 //=======================================
 void UART_WaitTxFifoEmpty(UART_Port uart_no); //do not use if tx flow control enabled
@@ -107,5 +123,10 @@ void UART_SetBaudrate(UART_Port uart_no, uint32 baud_rate);
 void UART_SetFlowCtrl(UART_Port uart_no, UART_HwFlowCtrl flow_ctrl, uint8 rx_thresh);
 void UART_SetLineInverse(UART_Port uart_no, UART_LineLevelInverse inverse_mask) ;
 void uart_init_new(void);
+
+void UART_init(xQueueHandle queue);
+
+void uart1_sendStr(const char *str);
+void uart0_sendStr(const char *str);
 
 #endif
