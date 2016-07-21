@@ -19,17 +19,19 @@
 #define MQTTEXTENDEDCMD_H_
 
 #if !defined(DLLImport)
-  #define DLLImport
+#define DLLImport
 #endif
 #if !defined(DLLExport)
-  #define DLLExport
+#define DLLExport
 #endif
 
-DLLExport int MQTTSerialize_extendedcmd(unsigned char* buf, int buflen, unsigned char dup, int qos, unsigned char retained, uint64_t packetid,
+DLLExport int MQTTSerialize_extendedcmd(unsigned char* buf, int buflen,
+		unsigned char dup, int qos, unsigned char retained, uint64_t packetid,
 		EXTED_CMD cmd, void *payload, int payloadlen);
 
-DLLExport int MQTTDeserialize_extendedcmd(unsigned char* dup, int* qos, unsigned char* retained, uint64_t* packetid,
-		EXTED_CMD* cmd, int *status,
-		void** payload, int* payloadlen, unsigned char* buf, int buflen);
+DLLExport int MQTTDeserialize_extendedcmd(unsigned char* dup, int* qos,
+		unsigned char* retained, uint64_t* packetid, EXTED_CMD* cmd,
+		int *status, void** payload, int* payloadlen, unsigned char* buf,
+		int buflen);
 
 #endif /* MQTTEXTENDEDCMD_H_ */

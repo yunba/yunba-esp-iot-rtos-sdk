@@ -9,9 +9,8 @@
 
 #include <string.h>
 
-
-int MQTTSerialize_extendedcmdLength(int qos, EXTED_CMD cmd, void *param, int param_len)
-{
+int MQTTSerialize_extendedcmdLength(int qos, EXTED_CMD cmd, void *param,
+		int param_len) {
 	int len = 0;
 
 	/* <packetid> + cmd(1byte) + len(the length of param)*/
@@ -21,18 +20,18 @@ int MQTTSerialize_extendedcmdLength(int qos, EXTED_CMD cmd, void *param, int par
 	return len;
 }
 
-
-int MQTTSerialize_extendedcmd(unsigned char* buf, int buflen, unsigned char dup, int qos, unsigned char retained, uint64_t packetid,
-		EXTED_CMD cmd, void *payload, int payloadlen)
-{
+int MQTTSerialize_extendedcmd(unsigned char* buf, int buflen, unsigned char dup,
+		int qos, unsigned char retained, uint64_t packetid, EXTED_CMD cmd,
+		void *payload, int payloadlen) {
 	unsigned char *ptr = buf;
-	MQTTHeader header = {0};
+	MQTTHeader header = { 0 };
 	int rem_len = 0;
 	int rc = 0;
 
 	FUNC_ENTRY;
-	if (MQTTPacket_len(rem_len = MQTTSerialize_extendedcmdLength(qos, cmd, payload, payloadlen)) > buflen)
-	{
+	if (MQTTPacket_len(
+			rem_len = MQTTSerialize_extendedcmdLength(qos, cmd, payload,
+					payloadlen)) > buflen) {
 		rc = MQTTPACKET_BUFFER_TOO_SHORT;
 		goto exit;
 	}
@@ -44,7 +43,8 @@ int MQTTSerialize_extendedcmd(unsigned char* buf, int buflen, unsigned char dup,
 	header.bits.retain = retained;
 	writeChar(&ptr, header.byte); /* write header */
 
-	ptr += MQTTPacket_encode(ptr, rem_len); /* write remaining length */;
+	ptr += MQTTPacket_encode(ptr, rem_len); /* write remaining length */
+	;
 
 	if (qos > 0)
 		writeInt64(&ptr, packetid);
@@ -57,7 +57,6 @@ int MQTTSerialize_extendedcmd(unsigned char* buf, int buflen, unsigned char dup,
 
 	rc = ptr - buf;
 
-exit:
-	FUNC_EXIT_RC(rc);
+	exit: FUNC_EXIT_RC(rc);
 	return rc;
 }
